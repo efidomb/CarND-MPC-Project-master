@@ -123,15 +123,21 @@ int main() {
 					double steer_value = j[1]["steering_angle"];
 					double throttle_value = j[1]["throttle"];
 					Eigen::VectorXd state(6);
+					px = 0;
+					psi = 0;
 
 					// LATENCY
 					double latency = 0.1;
+					double Lf = 2.67;
+					double psides = atan(coeffs[1]);
 					px = v * latency;
+					psi += v / Lf * steer_value * latency;
 					cte += v * sin(epsi) * latency;
 					v += throttle_value * latency;
+					epsi -= ((psi - psides) + v * steer_value / Lf * latency);
 					
 
-					state << 0, 0, 0, v, cte, epsi;
+					state << px, 0, psi, v, cte, epsi;
 					//state << 1, 1, 0.1, v, cte, epsi;
 					vector<double> vars = mpc.Solve(state, coeffs);
 					// yellow line
@@ -148,7 +154,7 @@ int main() {
 					// green line
 					vector<double> mpc_x_vals;
 					vector<double> mpc_y_vals;
-					for (int i = 0; i < vars.size(); i++) {
+					for (int i = 2; i < vars.size(); i++) {
 						if (i % 2 == 0) {
 							mpc_x_vals.push_back(vars[i]);
 						}

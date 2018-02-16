@@ -52,32 +52,24 @@ public:
 		// fg supposed to be bigger than the fg as he coming by 1: the cost in fg[0]
 
 		fg[0] = 0;
-		std::cout << "fg[0]" << fg[0] << std::endl;
 		// The part of the cost based on the reference state.
 		for (int t = 0; t < N; t++) {
-			std::cout << "t " << t << std::endl;
 			fg[0] += 2000 * CppAD::pow(vars[cte_start + t], 2); // it could be that the CppAD is not needed because of the using statment at the top on the page. same for the next few lines.
-			std::cout << "fg[0]" << fg[0] << std::endl;
 			fg[0] += 2000 * CppAD::pow(vars[epsi_start + t], 2); // also, tune the coeffs for the costs.
-			std::cout << "fg[0]" << fg[0] << std::endl;
 			fg[0] += CppAD::pow(vars[v_start + t] - ref_v, 2);
-			std::cout << "fg[0]" << fg[0] << std::endl;
 		}
-		std::cout << "fg[0]" << fg[0] << std::endl;
 
 		// Minimize the use of actuators.
 		for (int t = 0; t < N - 1; t++) {
 			fg[0] += 5 * CppAD::pow(vars[delta_start + t], 2);
 			fg[0] += 5 * CppAD::pow(vars[a_start + t], 2);
 		}
-		std::cout << "fg[0]" << fg[0] << std::endl;
 
 		// Minimize the value gap between sequential actuations.
 		for (int t = 0; t < N - 2; t++) {
 			fg[0] += 200 * CppAD::pow(vars[delta_start + t + 1] - vars[delta_start + t], 2);
 			fg[0] += 10 * CppAD::pow(vars[a_start + t + 1] - vars[a_start + t], 2);
 		}
-		std::cout << "fg[0]" << fg[0] << std::endl;
 
 		fg[1 + x_start] = vars[x_start];
 		fg[1 + y_start] = vars[y_start];
